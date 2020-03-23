@@ -1,4 +1,6 @@
-﻿namespace XI.B3BotManager.Monitor
+﻿using System;
+
+namespace XI.B3BotManager.Monitor
 {
     internal class Program
     {
