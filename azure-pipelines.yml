@@ -29,7 +29,7 @@ steps:
 
 - task: CopyFiles@2
   inputs: 
-    SourceFolder: '$(Build.SourcesDirectory)/src/XI.B3BotManager.Monitor/bin/Release/netcoreapp3.0/'
+    SourceFolder: '$(Build.SourcesDirectory)/src/XI.B3BotManager.Monitor/bin/Release/netcoreapp3.1/'
     Contents: '**'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/XI.B3BotManager.Monitor'
 
