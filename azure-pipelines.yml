@@ -26,3 +26,15 @@ steps:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- task: CopyFiles@2
+  inputs: 
+    SourceFolder: '$(Build.SourcesDirectory)/src/XI.B3BotManager.Monitor/bin/Release/netcoreapp3.0/'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/XI.B3BotManager.Monitor'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathToPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
