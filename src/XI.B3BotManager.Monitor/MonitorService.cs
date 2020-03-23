@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Serilog;
 using XI.B3BotManager.Monitor.Configuration;
@@ -32,7 +33,7 @@ namespace XI.B3BotManager.Monitor
                 B3Bots.Add(_b3BotFactory.CreateInstance(configFile));
 
             while (!_cts.IsCancellationRequested)
-                foreach (var b3Bot in B3Bots)
+                foreach (var b3Bot in B3Bots.TakeWhile(b3Bot => !_cts.IsCancellationRequested))
                 {
                     try
                     {
