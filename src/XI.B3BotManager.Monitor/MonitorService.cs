@@ -38,7 +38,15 @@ namespace XI.B3BotManager.Monitor
             while (!_cts.IsCancellationRequested)
                 foreach (var b3Bot in B3Bots.TakeWhile(b3Bot => !_cts.IsCancellationRequested))
                 {
-                    b3Bot.CheckStatus();
+                    try
+                    {
+                        b3Bot.CheckStatus();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error(ex, "[{Name}] Top-level error checking status of bot", b3Bot.BotTag);
+                    }
+                    
                     Thread.Sleep(5000);
                 }
         }
