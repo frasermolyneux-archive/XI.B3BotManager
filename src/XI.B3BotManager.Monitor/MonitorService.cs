@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Serilog;
@@ -29,21 +30,15 @@ namespace XI.B3BotManager.Monitor
         {
             _cts = new CancellationTokenSource();
 
+            KillAllOrphanProcesses();
+
             foreach (var configFile in _b3BotConfiguration.GetConfigurations())
                 B3Bots.Add(_b3BotFactory.CreateInstance(configFile));
 
             while (!_cts.IsCancellationRequested)
                 foreach (var b3Bot in B3Bots.TakeWhile(b3Bot => !_cts.IsCancellationRequested))
                 {
-                    try
-                    {
-                        b3Bot.CheckStatus();
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Error(ex, $"Error checking status of {b3Bot.Name}");
-                    }
-
+                    b3Bot.CheckStatus();
                     Thread.Sleep(5000);
                 }
         }
@@ -60,6 +55,13 @@ namespace XI.B3BotManager.Monitor
             _cts?.Cancel();
 
             foreach (var b3Bot in B3Bots) b3Bot.Kill();
+        }
+
+        private void KillAllOrphanProcesses()
+        {
+            var processes = Process.GetProcessesByName("b3");
+
+            foreach (var process in processes) process.Kill();
         }
     }
 }

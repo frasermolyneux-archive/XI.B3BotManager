@@ -7,7 +7,7 @@ namespace XI.B3BotManager.Monitor.Models
     internal class B3Bot
     {
         private readonly ILogger _logger;
-        private string _configurationFile;
+        private B3BotConfig _config;
         private Process _process;
 
         public B3Bot(ILogger logger)
@@ -15,23 +15,14 @@ namespace XI.B3BotManager.Monitor.Models
             _logger = logger;
         }
 
-        public string Name
+        public void Configure(B3BotConfig config)
         {
-            get
-            {
-                var parts = _configurationFile.Split("_");
-                return $"{parts[0]}{parts[1]}";
-            }
-        }
-
-        public void Configure(string configurationFile)
-        {
-            _configurationFile = configurationFile;
+            _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         public void CheckStatus()
         {
-            _logger.Debug("[{Name}] Checking status of B3Bot", Name);
+            _logger.Debug("[{Name}] Checking status of B3Bot", _config.BotTag);
 
             if (_process == null)
             {
@@ -44,7 +35,7 @@ namespace XI.B3BotManager.Monitor.Models
             if (!_process.HasExited)
                 return;
 
-            _logger.Warning("[{Name}] Process has exited, will create a new one", Name);
+            _logger.Warning("[{Name}] Process has exited, will create a new one", _config.BotTag);
             CreateProcessInstance();
         }
 
@@ -54,7 +45,7 @@ namespace XI.B3BotManager.Monitor.Models
             {
                 _process?.Dispose();
 
-                _logger.Information("[{Name}] Starting new instance of the B3Bot process", Name);
+                _logger.Information("[{Name}] Starting new instance of the B3Bot process", _config.BotTag);
 
                 const string b3BotExe = "C:\\Applications\\BigBrotherBot\\b3.exe";
                 _process = new Process
@@ -62,7 +53,7 @@ namespace XI.B3BotManager.Monitor.Models
                     StartInfo = new ProcessStartInfo
                     {
                         FileName = b3BotExe,
-                        Arguments = $"-c C:\\Applications\\BigBrotherBot\\conf\\{_configurationFile}",
+                        Arguments = $"-c C:\\Applications\\BigBrotherBot\\conf\\{_config.ConfigName}",
                         UseShellExecute = true
                     }
                 };
@@ -71,14 +62,14 @@ namespace XI.B3BotManager.Monitor.Models
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "[{Name}] Failed to start process", Name);
+                _logger.Error(ex, "[{Name}] Failed to start process", _config.BotTag);
                 _process = null;
             }
         }
 
         public void Kill()
         {
-            _logger.Information("[{Name}] Killing B3Bot", Name);
+            _logger.Information("[{Name}] Killing B3Bot", _config.BotTag);
 
             if (_process == null) return;
 
@@ -88,7 +79,7 @@ namespace XI.B3BotManager.Monitor.Models
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "[{Name}] Error killing process", Name);
+                _logger.Error(ex, "[{Name}] Error killing process", _config.BotTag);
                 _process = null;
             }
         }
