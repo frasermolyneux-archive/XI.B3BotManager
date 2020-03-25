@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Serilog;
 
 namespace XI.B3BotManager.Monitor.Models
@@ -67,7 +68,16 @@ namespace XI.B3BotManager.Monitor.Models
                     data = streamReader.ReadToEnd();
                 }
 
-                if (!data.Contains("MySQL server has gone away")) return;
+                var errorValues = new[]
+                {
+                    // ReSharper disable StringLiteralTypo
+                    "MySQL server has gone away",
+                    "([Errno 11001] getaddrinfo failed)",
+                    "Can\'t connect to MySQL server on"
+                    // ReSharper restore StringLiteralTypo
+                };
+
+                if (!errorValues.Any(ev => data.Contains(ev))) return;
 
                 _logger.Warning("[{Name}] MySQL found in log file, killing process", _config.BotTag);
                 Kill();
