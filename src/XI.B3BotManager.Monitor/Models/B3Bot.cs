@@ -73,7 +73,9 @@ namespace XI.B3BotManager.Monitor.Models
                     // ReSharper disable StringLiteralTypo
                     "MySQL server has gone away",
                     "([Errno 11001] getaddrinfo failed)",
-                    "Can\'t connect to MySQL server on"
+                    "Can\'t connect to MySQL server on",
+                    "ERROR: lost connection with the storage layer during query",
+                    "New MySQL database connection requested but last connection attempt failed less than 60 seconds ago"
                     // ReSharper restore StringLiteralTypo
                 };
 
